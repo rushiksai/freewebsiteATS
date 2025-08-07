@@ -20,7 +20,6 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Analyze resume endpoint
   app.post("/api/analyze", upload.single('resume'), async (req: MulterRequest, res) => {
     try {
       if (!req.file) {
@@ -33,7 +32,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Job title and description are required" });
       }
 
-      // Validate file
       const validation = FileProcessor.validateFile(req.file);
       if (!validation.isValid) {
         fs.unlinkSync(req.file.path);
@@ -60,20 +58,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const validatedData = insertAnalysisSchema.parse(analysisData);
       const savedAnalysis = await storage.createAnalysis(validatedData);
-
       fs.unlinkSync(req.file.path);
+      
       res.json({
         id: savedAnalysis.id,
         ...analysisResult
       });
+
     } catch (error) {
       console.error('Analysis error:', error);
+      
       if (req.file && fs.existsSync(req.file.path)) {
         fs.unlinkSync(req.file.path);
       }
+
       res.status(500).json({ 
         error: error instanceof Error ? error.message : "Failed to analyze resume" 
-        });
+      });
     }
   });
 
