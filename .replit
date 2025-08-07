@@ -17,4 +17,8 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd ResumeRover && npm run dev"
+args = "cd ResumeRover && npm install && npm run dev"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
