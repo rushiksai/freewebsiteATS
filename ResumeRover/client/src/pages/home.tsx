@@ -344,6 +344,73 @@ export default function Home() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Skills Comparison */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Skills Comparison</CardTitle>
+                    <CardDescription>
+                      <strong>Tip:</strong> Match the skills in your resume to the exact spelling in the job description. Prioritize skills that appear most frequently in the job description.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Skills Comparison Table */}
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="font-medium text-gray-900">Skills Comparison</h4>
+                          <Button variant="outline" size="sm" className="text-xs">
+                            📋 Copy All
+                          </Button>
+                        </div>
+                        
+                        <div className="bg-white border rounded-lg overflow-hidden">
+                          <div className="grid grid-cols-3 bg-gray-50 border-b text-sm font-medium text-gray-700">
+                            <div className="p-3">Skill</div>
+                            <div className="p-3 text-center">Resume</div>
+                            <div className="p-3 text-center">Job Description</div>
+                          </div>
+                          
+                          {/* Sample skills data - in real app this would come from analysis */}
+                          {[
+                            { skill: "computer vision", resume: 3, job: 2 },
+                            { skill: "linux operating systems", resume: 1, job: 1 },
+                            { skill: "Software Development", resume: 1, job: 1 },
+                            { skill: "Computer Science", resume: 0, job: 1, missing: true },
+                            { skill: "image processing", resume: 3, job: 1 },
+                            { skill: "vision software", resume: 1, job: 1 },
+                            { skill: "experiments", resume: 1, job: 1 },
+                            { skill: "github", resume: 5, job: 1 },
+                            { skill: "Python", resume: 7, job: 1 }
+                          ].map((item, index) => (
+                            <div key={index} className="grid grid-cols-3 border-b last:border-b-0 text-sm">
+                              <div className="p-3 text-gray-700">{item.skill}</div>
+                              <div className="p-3 text-center">
+                                {item.missing ? (
+                                  <XCircle className="w-4 h-4 text-red-500 mx-auto" />
+                                ) : (
+                                  <span className="text-gray-900">{item.resume}</span>
+                                )}
+                              </div>
+                              <div className="p-3 text-center text-gray-900">{item.job}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Highlighted Skills */}
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-4">Highlighted Skills</h4>
+                        <div className="bg-gray-100 rounded-lg p-6 text-center">
+                          <div className="text-gray-500 mb-2">📝</div>
+                          <p className="text-sm text-gray-600">
+                            Skills that appear frequently in the job description will be highlighted here
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
 
