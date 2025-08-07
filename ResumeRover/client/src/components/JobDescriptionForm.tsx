@@ -1,3 +1,5 @@
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -5,74 +7,72 @@ import { Label } from "@/components/ui/label";
 import { Search, Loader2 } from "lucide-react";
 
 interface JobDescriptionFormProps {
-  jobTitle: string;
-  jobDescription: string;
-  onJobTitleChange: (value: string) => void;
-  onJobDescriptionChange: (value: string) => void;
-  onAnalyze: () => void;
+  onAnalyze: (jobTitle: string, jobDescription: string) => void;
   isAnalyzing: boolean;
   disabled: boolean;
 }
 
-export function JobDescriptionForm({
-  jobTitle,
-  jobDescription,
-  onJobTitleChange,
-  onJobDescriptionChange,
-  onAnalyze,
-  isAnalyzing,
-  disabled,
-}: JobDescriptionFormProps) {
+export function JobDescriptionForm({ onAnalyze, isAnalyzing, disabled }: JobDescriptionFormProps) {
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (jobTitle.trim() && jobDescription.trim()) {
+      onAnalyze(jobTitle.trim(), jobDescription.trim());
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="job-title" className="text-sm font-medium text-gray-700 mb-2">
+        <Label htmlFor="jobTitle" className="text-sm font-medium text-gray-700">
           Job Title
         </Label>
         <Input
-          id="job-title"
+          id="jobTitle"
+          type="text"
+          placeholder="e.g., Software Engineer"
           value={jobTitle}
-          onChange={(e) => onJobTitleChange(e.target.value)}
-          placeholder="e.g., Senior Software Engineer"
+          onChange={(e) => setJobTitle(e.target.value)}
           className="mt-1"
-          data-testid="input-job-title"
+          required
         />
       </div>
-
+      
       <div>
-        <Label htmlFor="job-description" className="text-sm font-medium text-gray-700 mb-2">
+        <Label htmlFor="jobDescription" className="text-sm font-medium text-gray-700">
           Job Description
         </Label>
         <Textarea
-          id="job-description"
+          id="jobDescription"
+          placeholder="Paste the complete job description here..."
           value={jobDescription}
-          onChange={(e) => onJobDescriptionChange(e.target.value)}
-          placeholder="Paste the job description here..."
-          rows={12}
+          onChange={(e) => setJobDescription(e.target.value)}
+          rows={8}
           className="mt-1 resize-none"
-          data-testid="textarea-job-description"
+          required
         />
       </div>
 
       <Button
-        onClick={onAnalyze}
-        disabled={disabled || isAnalyzing}
-        className="w-full bg-primary hover:bg-blue-600 text-white"
+        type="submit"
+        disabled={disabled || !jobTitle.trim() || !jobDescription.trim() || isAnalyzing}
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
         size="lg"
-        data-testid="button-analyze"
       >
         {isAnalyzing ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Analyzing...
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Analyzing Resume...
           </>
         ) : (
           <>
-            <Search className="mr-2 h-4 w-4" />
+            <Search className="w-4 h-4 mr-2" />
             Analyze Resume Match
           </>
         )}
       </Button>
-    </div>
+    </form>
   );
 }

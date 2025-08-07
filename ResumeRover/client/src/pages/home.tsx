@@ -1,32 +1,34 @@
+
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { Upload, FileText, Target, BarChart3, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { FileUpload } from "@/components/FileUpload";
 import { JobDescriptionForm } from "@/components/JobDescriptionForm";
 import { AnalysisResults } from "@/components/AnalysisResults";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { FileText, Briefcase, ChartLine, Upload, Key, List, CheckCircle, File, Users, Mail } from "lucide-react";
-import { AnalysisResult } from "@shared/schema";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
-interface AnalysisResponse extends AnalysisResult {
-  id: string;
+interface AnalysisResult {
+  atsScore: number;
+  keywordScore: number;
+  skillsScore: number;
+  matchedKeywords: Array<{ keyword: string; count: number }>;
+  missingKeywords: Array<{ keyword: string; priority: string }>;
+  recommendations: string[];
+  skillsAnalysis: Array<{ category: string; score: number }>;
 }
 
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [jobTitle, setJobTitle] = useState("");
-  const [jobDescription, setJobDescription] = useState("");
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResponse | null>(null);
-  const { toast } = useToast();
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
 
-  const analyzeMutation = useMutation({
-    mutationFn: async () => {
-      if (!selectedFile || !jobTitle || !jobDescription) {
-        throw new Error("Please upload a resume and fill in job details");
-      }
-
+  const analyzeResume = useMutation({
+    mutationFn: async ({ file, jobTitle, jobDescription }: { file: File; jobTitle: string; jobDescription: string }) => {
       const formData = new FormData();
-      formData.append('resume', selectedFile);
+      formData.append('resume', file);
       formData.append('jobTitle', jobTitle);
       formData.append('jobDescription', jobDescription);
 
@@ -44,175 +46,320 @@ export default function Home() {
     },
     onSuccess: (data) => {
       setAnalysisResult(data);
-      toast({
-        title: "Analysis Complete",
-        description: "Your resume has been successfully analyzed!",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Analysis Failed",
-        description: error.message,
-        variant: "destructive",
-      });
     },
   });
 
-  const handleAnalyze = () => {
-    analyzeMutation.mutate();
+  const handleAnalyze = (jobTitle: string, jobDescription: string) => {
+    if (!selectedFile) return;
+    analyzeResume.mutate({ file: selectedFile, jobTitle, jobDescription });
   };
 
-  const handleNewAnalysis = () => {
-    setSelectedFile(null);
-    setJobTitle("");
-    setJobDescription("");
-    setAnalysisResult(null);
+  const renderCircularProgress = (score: number, label: string) => (
+    <div className="flex flex-col items-center">
+      <div className="relative w-32 h-32">
+        <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
+          <circle
+            cx="50"
+            cy="50"
+            r="40"
+            stroke="#e5e7eb"
+            strokeWidth="8"
+            fill="none"
+          />
+          <circle
+            cx="50"
+            cy="50"
+            r="40"
+            stroke="#10b981"
+            strokeWidth="8"
+            fill="none"
+            strokeDasharray={`${2 * Math.PI * 40}`}
+            strokeDashoffset={`${2 * Math.PI * 40 * (1 - score / 100)}`}
+            className="transition-all duration-1000 ease-out"
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-2xl font-bold text-gray-900">{score}%</span>
+        </div>
+      </div>
+      <span className="mt-2 text-sm font-medium text-gray-700">{label}</span>
+    </div>
+  );
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return "text-green-600";
+    if (score >= 60) return "text-yellow-600";
+    return "text-red-600";
+  };
+
+  const getScoreIcon = (score: number) => {
+    if (score >= 80) return <CheckCircle className="w-4 h-4 text-green-600" />;
+    if (score >= 60) return <AlertTriangle className="w-4 h-4 text-yellow-600" />;
+    return <XCircle className="w-4 h-4 text-red-600" />;
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <FileText className="text-primary h-8 w-8 mr-3" data-testid="logo" />
-              <h1 className="text-xl font-bold text-gray-900" data-testid="app-title">ATS Resume Checker</h1>
+      {/* Sidebar */}
+      <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg border-r">
+        <div className="p-6 border-b">
+          <h1 className="text-xl font-bold text-blue-600 flex items-center">
+            <Target className="w-6 h-6 mr-2" />
+            ResumeRover
+          </h1>
+        </div>
+        
+        <nav className="p-4">
+          <div className="space-y-2">
+            <div className="flex items-center p-3 bg-blue-50 rounded-lg text-blue-700">
+              <BarChart3 className="w-5 h-5 mr-3" />
+              <span className="font-medium">Resume Analysis</span>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-gray-600 hover:text-primary transition-colors" data-testid="link-how-it-works">How it Works</a>
-              <a href="#" className="text-gray-600 hover:text-primary transition-colors" data-testid="link-tips">Tips</a>
-              <a href="#" className="text-gray-600 hover:text-primary transition-colors" data-testid="link-contact">Contact</a>
-            </nav>
+            <div className="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-lg cursor-pointer">
+              <FileText className="w-5 h-5 mr-3" />
+              <span>My Resumes</span>
+            </div>
           </div>
-        </div>
-      </header>
+        </nav>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4" data-testid="hero-title">Optimize Your Resume for ATS</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto" data-testid="hero-description">
-            Get instant feedback on how well your resume matches job descriptions and improve your chances of getting noticed by hiring managers.
-          </p>
-        </div>
+      {/* Main Content */}
+      <div className="ml-64 p-8">
+        {!analysisResult ? (
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Resume Analysis</h2>
+              <p className="text-gray-600">Upload your resume and job description to get instant ATS compatibility feedback</p>
+            </div>
 
-        {/* Main Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Resume Upload Section */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center" data-testid="upload-section-title">
-              <Upload className="text-primary mr-3" />
-              Upload Your Resume
-            </h3>
-            
-            <FileUpload 
-              onFileSelect={setSelectedFile} 
-              selectedFile={selectedFile}
-              data-testid="file-upload"
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Upload Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Upload className="w-5 h-5 mr-2 text-blue-600" />
+                    Upload Resume
+                  </CardTitle>
+                  <CardDescription>
+                    Upload your resume in PDF, DOC, or DOCX format
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <FileUpload 
+                    onFileSelect={setSelectedFile} 
+                    selectedFile={selectedFile}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Job Description Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <FileText className="w-5 h-5 mr-2 text-blue-600" />
+                    Job Description
+                  </CardTitle>
+                  <CardDescription>
+                    Enter the job details you want to match against
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <JobDescriptionForm
+                    onAnalyze={handleAnalyze}
+                    isAnalyzing={analyzeResume.isPending}
+                    disabled={!selectedFile}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            {analyzeResume.isPending && (
+              <div className="mt-8 flex justify-center">
+                <LoadingSpinner />
+              </div>
+            )}
           </div>
+        ) : (
+          <div className="max-w-6xl mx-auto">
+            {/* Header */}
+            <div className="mb-8 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Resume Analysis Results</h2>
+                <p className="text-gray-600">Company - Job Title</p>
+              </div>
+              <div className="flex gap-3">
+                <Button variant="outline">Track</Button>
+                <Button variant="outline">Print</Button>
+              </div>
+            </div>
 
-          {/* Job Description Section */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center" data-testid="job-section-title">
-              <Briefcase className="text-primary mr-3" />
-              Job Description
-            </h3>
-            
-            <JobDescriptionForm
-              jobTitle={jobTitle}
-              jobDescription={jobDescription}
-              onJobTitleChange={setJobTitle}
-              onJobDescriptionChange={setJobDescription}
-              onAnalyze={handleAnalyze}
-              isAnalyzing={analyzeMutation.isPending}
-              disabled={!selectedFile || !jobTitle.trim() || !jobDescription.trim()}
-              data-testid="job-form"
-            />
+            {/* Main Results Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Match Rate */}
+              <div className="lg:col-span-1">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Match Rate</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col items-center">
+                    {renderCircularProgress(analysisResult.atsScore, "Overall Match")}
+                    
+                    <div className="w-full mt-6 space-y-4">
+                      <Button className="w-full" variant="default">
+                        Upload & rescan
+                      </Button>
+                      <Button className="w-full" variant="outline">
+                        <span className="text-yellow-600 mr-2">⚡</span>
+                        Power Edit
+                      </Button>
+                    </div>
+
+                    {/* Detailed Scores */}
+                    <div className="w-full mt-6 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Searchability</span>
+                        <span className="text-sm font-medium">{analysisResult.keywordScore}%</span>
+                      </div>
+                      <Progress value={analysisResult.keywordScore} className="h-2" />
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Hard Skills</span>
+                        <span className="text-sm font-medium">{analysisResult.skillsScore}%</span>
+                      </div>
+                      <Progress value={analysisResult.skillsScore} className="h-2" />
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Soft Skills</span>
+                        <span className="text-sm font-medium">85%</span>
+                      </div>
+                      <Progress value={85} className="h-2" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Analysis Details */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Searchability Section */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      Searchability
+                      <Badge className="ml-2 bg-blue-100 text-blue-800">IMPORTANT</Badge>
+                    </CardTitle>
+                    <CardDescription>
+                      An ATS (Applicant Tracking System) is a software used by 90% of companies and recruiters to search for resumes and manage the hiring process. Below is how well your resume appears in an ATS and a recruiter search.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                      <p className="text-sm text-blue-800">
+                        <strong>Tip:</strong> Fix the red Xs to ensure your resume is easily searchable by recruiters and parsed correctly by the ATS.
+                      </p>
+                    </div>
+
+                    {/* ATS Tips */}
+                    <div className="space-y-4">
+                      <div className="border-l-4 border-red-400 pl-4">
+                        <div className="flex items-start">
+                          <XCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3" />
+                          <div>
+                            <p className="text-sm text-gray-700">Adding this job's company name and web address can help us provide you ATS-specific tips.</p>
+                            <Button variant="link" className="p-0 h-auto text-blue-600 text-sm">Update scan information</Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-l-4 border-red-400 pl-4">
+                        <div className="flex items-start">
+                          <XCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3" />
+                          <div>
+                            <p className="text-sm text-gray-700">We did not find an address in your resume. Recruiters use your address to validate your location for job matches.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-l-4 border-green-400 pl-4">
+                        <div className="flex items-start">
+                          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3" />
+                          <div>
+                            <p className="text-sm text-gray-700">You provided your email. Recruiters use your email to contact you for job matches.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-l-4 border-green-400 pl-4">
+                        <div className="flex items-start">
+                          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3" />
+                          <div>
+                            <p className="text-sm text-gray-700">You provided your phone number.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Summary Section */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Summary</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="border-l-4 border-green-400 pl-4">
+                      <div className="flex items-start">
+                        <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3" />
+                        <div>
+                          <p className="text-sm text-gray-700">We found a summary section on your resume. Good job! The summary provides a quick overview of the candidate's qualifications, helping recruiters and hiring managers promptly grasp the value the candidate can offer in the position.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Section Headings */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Section Headings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="border-l-4 border-green-400 pl-4">
+                        <div className="flex items-start">
+                          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3" />
+                          <div>
+                            <p className="text-sm text-gray-700">We found the education section in your resume.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-l-4 border-green-400 pl-4">
+                        <div className="flex items-start">
+                          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3" />
+                          <div>
+                            <p className="text-sm text-gray-700">We found the work experience section in your resume.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <div className="mt-8 text-center">
+              <Button 
+                onClick={() => setAnalysisResult(null)}
+                variant="outline"
+                size="lg"
+              >
+                Analyze Another Resume
+              </Button>
+            </div>
           </div>
-        </div>
-
-        {/* Analysis Results */}
-        {analysisResult && (
-          <AnalysisResults 
-            result={analysisResult} 
-            onNewAnalysis={handleNewAnalysis}
-            data-testid="analysis-results"
-          />
         )}
-
-        {/* Tips Section */}
-        <div className="mt-12 bg-white rounded-xl shadow-lg p-8">
-          <h3 className="text-2xl font-semibold text-gray-900 mb-6 text-center" data-testid="tips-title">Tips for ATS Optimization</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="text-center" data-testid="tip-formats">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <File className="text-primary h-8 w-8" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Use Standard Formats</h4>
-              <p className="text-gray-600 text-sm">Stick to common file formats like PDF or DOCX for better ATS compatibility.</p>
-            </div>
-            <div className="text-center" data-testid="tip-keywords">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Key className="text-secondary h-8 w-8" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Match Keywords</h4>
-              <p className="text-gray-600 text-sm">Include relevant keywords from the job description naturally in your resume.</p>
-            </div>
-            <div className="text-center" data-testid="tip-formatting">
-              <div className="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <List className="text-warning h-8 w-8" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Simple Formatting</h4>
-              <p className="text-gray-600 text-sm">Use clear headings, bullet points, and avoid complex graphics or tables.</p>
-            </div>
-            <div className="text-center" data-testid="tip-proofreading">
-              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="text-purple-500 h-8 w-8" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Proofread Carefully</h4>
-              <p className="text-gray-600 text-sm">Ensure perfect spelling and grammar as ATS systems are sensitive to errors.</p>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center mb-4">
-                <FileText className="text-primary h-8 w-8 mr-3" />
-                <h3 className="text-xl font-bold" data-testid="footer-title">ATS Resume Checker</h3>
-              </div>
-              <p className="text-gray-300 mb-4">Optimize your resume for Applicant Tracking Systems and increase your chances of landing your dream job.</p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4" data-testid="footer-resources-title">Resources</h4>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-primary transition-colors" data-testid="footer-link-templates">Resume Templates</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors" data-testid="footer-link-guide">ATS Guide</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors" data-testid="footer-link-tips">Interview Tips</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors" data-testid="footer-link-advice">Career Advice</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4" data-testid="footer-support-title">Support</h4>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-primary transition-colors" data-testid="footer-link-help">Help Center</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors" data-testid="footer-link-contact">Contact Us</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors" data-testid="footer-link-privacy">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors" data-testid="footer-link-terms">Terms of Service</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-            <p className="text-gray-300" data-testid="footer-copyright">&copy; 2024 ATS Resume Checker. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }
