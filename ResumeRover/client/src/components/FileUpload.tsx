@@ -132,4 +132,3 @@ export function FileUpload({ onFileSelect, selectedFile }: FileUploadProps) {
     </div>
   );
 }
-
