@@ -252,47 +252,137 @@ export default function Home() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                    <div className="bg-blue-50 p-4 rounded-lg mb-6">
                       <p className="text-sm text-blue-800">
                         <strong>Tip:</strong> Fix the red Xs to ensure your resume is easily searchable by recruiters and parsed correctly by the ATS.
                       </p>
                     </div>
 
-                    {/* ATS Tips */}
-                    <div className="space-y-4">
-                      <div className="border-l-4 border-red-400 pl-4">
-                        <div className="flex items-start">
-                          <XCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3" />
-                          <div>
-                            <p className="text-sm text-gray-700">Adding this job's company name and web address can help us provide you ATS-specific tips.</p>
-                            <Button variant="link" className="p-0 h-auto text-blue-600 text-sm">Update scan information</Button>
+                    {/* ATS Categories */}
+                    <div className="space-y-6">
+                      {/* ATS Tip */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-3 flex items-center">
+                          <div className="w-4 h-4 bg-red-500 rounded-full mr-3"></div>
+                          ATS Tip
+                        </h5>
+                        <div className="space-y-3 ml-7">
+                          <div className="flex items-start">
+                            <XCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm text-gray-700">Adding this job's company name and web address can help us provide you ATS-specific tips.</p>
+                              <Button variant="link" className="p-0 h-auto text-blue-600 text-sm">Update scan information</Button>
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="border-l-4 border-red-400 pl-4">
-                        <div className="flex items-start">
-                          <XCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3" />
-                          <div>
+                      {/* Contact Information */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-3 flex items-center">
+                          <div className="w-4 h-4 bg-red-500 rounded-full mr-3"></div>
+                          Contact Information
+                        </h5>
+                        <div className="space-y-3 ml-7">
+                          <div className="flex items-start">
+                            <XCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
                             <p className="text-sm text-gray-700">We did not find an address in your resume. Recruiters use your address to validate your location for job matches.</p>
                           </div>
-                        </div>
-                      </div>
-
-                      <div className="border-l-4 border-green-400 pl-4">
-                        <div className="flex items-start">
-                          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3" />
-                          <div>
+                          
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
                             <p className="text-sm text-gray-700">You provided your email. Recruiters use your email to contact you for job matches.</p>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">You provided your phone number.</p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="border-l-4 border-green-400 pl-4">
-                        <div className="flex items-start">
-                          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3" />
-                          <div>
-                            <p className="text-sm text-gray-700">You provided your phone number.</p>
+                      {/* Summary */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-3 flex items-center">
+                          <div className="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
+                          Summary
+                        </h5>
+                        <div className="ml-7">
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">We found a summary section on your resume. Good job! The summary provides a quick overview of the candidate's qualifications, helping recruiters and hiring managers promptly grasp the value the candidate can offer in the position.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Section Headings */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-3 flex items-center">
+                          <div className="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
+                          Section Headings
+                        </h5>
+                        <div className="space-y-3 ml-7">
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">We found the education section in your resume.</p>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">We found the work experience section in your resume.</p>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <XCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">Your Work Experience section appears empty. We recommend that this section should showcase at least one listing, even if it's just an internship or a personal project.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Job Title Match */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-3 flex items-center">
+                          <div className="w-4 h-4 bg-red-500 rounded-full mr-3"></div>
+                          Job Title Match
+                        </h5>
+                        <div className="ml-7">
+                          <div className="flex items-start">
+                            <XCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm text-gray-700">No job title was found in the job description. Please make sure your job description includes a job title.</p>
+                              <Button variant="link" className="p-0 h-auto text-blue-600 text-sm">Update scan information</Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Date Formatting */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-3 flex items-center">
+                          <div className="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
+                          Date Formatting
+                        </h5>
+                        <div className="ml-7">
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">The dates in your work experience section are properly formatted.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Education Match */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-3 flex items-center">
+                          <div className="w-4 h-4 bg-yellow-500 rounded-full mr-3"></div>
+                          Education Match
+                        </h5>
+                        <div className="ml-7">
+                          <div className="flex items-start">
+                            <AlertTriangle className="w-5 h-5 text-yellow-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm text-gray-700">The job description does not list required or preferred education, and your education information is missing.</p>
+                              <Button variant="link" className="p-0 h-auto text-blue-600 text-sm">Update required education level</Button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -577,13 +667,7 @@ export default function Home() {
                         </div>
                       </div>
 
-                      {/* Upgrade Notice */}
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                        <p className="text-sm text-blue-700 mb-3">Upgrade your account to see more findings.</p>
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                          Upgrade your account
-                        </Button>
-                      </div>
+                      
                     </div>
                   </CardContent>
                 </Card>
