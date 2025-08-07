@@ -20,7 +20,6 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  
   // Analyze resume endpoint
   app.post("/api/analyze", upload.single('resume'), async (req: MulterRequest, res) => {
     try {
@@ -37,18 +36,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate file
       const validation = FileProcessor.validateFile(req.file);
       if (!validation.isValid) {
-        // Clean up uploaded file
         fs.unlinkSync(req.file.path);
         return res.status(400).json({ error: validation.error });
       }
 
-      // Extract text from resume
       const resumeText = await FileProcessor.extractText(req.file.path, req.file.mimetype);
-
-      // Analyze with FREE AI (no costs!)
       const analysisResult = await FreeAIAnalyzer.analyzeResume(resumeText, jobTitle, jobDescription);
 
-      // Save analysis to storage
       const analysisData = {
         fileName: req.file.originalname,
         fileSize: req.file.size,
@@ -67,49 +61,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertAnalysisSchema.parse(analysisData);
       const savedAnalysis = await storage.createAnalysis(validatedData);
 
-      // Clean up uploaded file
       fs.unlinkSync(req.file.path);
-
       res.json({
         id: savedAnalysis.id,
         ...analysisResult
       });
-
     } catch (error) {
       console.error('Analysis error:', error);
-      
-      // Clean up uploaded file if it exists
       if (req.file && fs.existsSync(req.file.path)) {
         fs.unlinkSync(req.file.path);
       }
-
       res.status(500).json({ 
         error: error instanceof Error ? error.message : "Failed to analyze resume" 
-      });
-    }
-  });
-
-  // Get analysis by ID
-  app.get("/api/analysis/:id", async (req, res) => {
-    try {
-      const analysis = await storage.getAnalysis(req.params.id);
-      if (!analysis) {
-        return res.status(404).json({ error: "Analysis not found" });
-      }
-      res.json(analysis);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to retrieve analysis" });
-    }
-  });
-
-  // Get recent analyses
-  app.get("/api/analyses/recent", async (req, res) => {
-    try {
-      const limit = parseInt(req.query.limit as string) || 10;
-      const analyses = await storage.getRecentAnalyses(limit);
-      res.json(analyses);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to retrieve analyses" });
+        });
     }
   });
 
