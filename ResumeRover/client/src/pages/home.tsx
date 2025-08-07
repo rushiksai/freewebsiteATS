@@ -411,6 +411,182 @@ export default function Home() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Soft Skills */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      Soft Skills
+                      <Badge className="ml-2 bg-orange-100 text-orange-800">MEDIUM SCORE IMPACT</Badge>
+                    </CardTitle>
+                    <CardDescription>
+                      Soft skills are your traits and abilities that are not unique to any job. Your soft skills are part of your personality, and can be learned also. These skills are the traits that typically make you a good employee for any company such as time management and communication. Soft skills have a medium impact on your match score.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                      <p className="text-sm text-blue-800">
+                        <strong>Tip:</strong> Prioritize hard skills in your resume to get interviews, and then showcase your soft skills in the interview to get job offers.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Skills Comparison */}
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-4">Skills Comparison</h4>
+                        <div className="bg-white border rounded-lg">
+                          <div className="p-4 border-b bg-red-50">
+                            <div className="flex items-center">
+                              <XCircle className="w-5 h-5 text-red-500 mr-3" />
+                              <span className="text-sm font-medium text-red-700">No matching soft skills</span>
+                            </div>
+                            <p className="text-xs text-red-600 mt-1">
+                              We did not find any matching soft skills in your resume that's included in the job description. We recommend that you update your resume and rescan.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4">
+                          <div className="flex items-center text-sm text-gray-600">
+                            <span>Don't see skills from the job description?</span>
+                            <Button variant="link" className="p-0 ml-2 h-auto text-blue-600 text-sm">
+                              + Add Skill
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Highlighted Skills */}
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-4">Highlighted Skills</h4>
+                        <div className="bg-gray-100 rounded-lg p-6 text-center">
+                          <div className="text-gray-500 mb-2">📝</div>
+                          <p className="text-sm text-gray-600">
+                            Soft skills that appear frequently in the job description will be highlighted here
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Recruiter Tips */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      Recruiter tips
+                      <Badge className="ml-2 bg-purple-100 text-purple-800">IMPORTANT</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-start">
+                        <div className="w-4 h-4 bg-blue-600 rounded-full mt-1 mr-4 flex-shrink-0"></div>
+                        <div>
+                          <h5 className="font-medium text-gray-900 mb-1">Job Level Match</h5>
+                          <p className="text-sm text-gray-600">No specific years of experience were found in this job description. Focus on matching your skills and qualifications to the role's requirements. Consider how your experience, regardless of duration, aligns with the job's key responsibilities before applying.</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start">
+                        <div className="w-4 h-4 bg-yellow-500 rounded-full mt-1 mr-4 flex-shrink-0"></div>
+                        <div>
+                          <h5 className="font-medium text-gray-900 mb-1">Measurable Results</h5>
+                          <p className="text-sm text-gray-600">We found 0 mentions of measurable results in your resume. Consider adding at least 3 specific achievements or impact you had in your job (e.g. time saved, increase in sales, etc).</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start">
+                        <div className="w-4 h-4 bg-red-500 rounded-full mt-1 mr-4 flex-shrink-0"></div>
+                        <div>
+                          <h5 className="font-medium text-gray-900 mb-1">Resume Tone</h5>
+                          <p className="text-sm text-gray-600">The tone of your resume is generally positive and not common clichés and buzzwords were found. Good job!</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start">
+                        <div className="w-4 h-4 bg-green-500 rounded-full mt-1 mr-4 flex-shrink-0"></div>
+                        <div>
+                          <h5 className="font-medium text-gray-900 mb-1">Web Presence</h5>
+                          <p className="text-sm text-gray-600">Nice - You've linked to a website that builds your web credibility. Recruiters appreciate the convenience and credibility associated with a professional website.</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start">
+                        <div className="w-4 h-4 bg-green-500 rounded-full mt-1 mr-4 flex-shrink-0"></div>
+                        <div>
+                          <h5 className="font-medium text-gray-900 mb-1">Word Count</h5>
+                          <p className="text-sm text-gray-600">There are 506 words in your resume, which is under the suggested 1000 word count for relevance and ease of reading reasons.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Formatting */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Formatting</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {/* Layout */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-3">Layout</h5>
+                        <div className="space-y-3">
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">We found that your resume has appropriate white space. Good job!</p>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">We found that your resume has appropriate margins. Good job!</p>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">We found that your resume uses proper text alignment. Good job!</p>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <XCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">Your resume may be formatted in columns. Consider using a single-column layout for better ATS compatibility.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Font Check */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-3">Font Check</h5>
+                        <div className="space-y-3">
+                          <div className="flex items-start">
+                            <XCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">Your resume appears to use a non-standard font. Consider using common fonts like Arial, Helvetica, or Times New Roman for better ATS readability.</p>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">Your font size appears to be appropriate (10-12 point). Good job!</p>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <p className="text-sm text-gray-700">Your resume has good contrast between text and background. Good job!</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Upgrade Notice */}
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                        <p className="text-sm text-blue-700 mb-3">Upgrade your account to see more findings.</p>
+                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                          Upgrade your account
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
 
